@@ -15,7 +15,7 @@ typedef struct SOCKETINFO {
 int nTotalSocket = 0;
 SOCKETINFO *SocketInfoArray[FD_SETSIZE];
 BOOL AddSocketInfo(SOCKET sock);
-void RemoveSocketInfo(int nIndex);
+void RemoveSocketInfo(int index);
 void err_quit(const char *msg);
 void err_display(const char *msg);
 int main(int argc, char **argv) {
@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
 	return 0;
 }
 BOOL AddSocketInfo(SOCKET sock) {
-	if (nTotalSocket > -FD_SETSIZE) {
+	if (nTotalSocket >=FD_SETSIZE) {
 		printf("[오류] 소켓정보를 추가할수 없습니다!\n");
 		return FALSE;
 	}
