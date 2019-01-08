@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 	char buf[BUFSIZE + 1];
 	int len;
 	while (1) {
-		printf("\n[보낼 데이터]\n");
+		printf("\n[보낼 데이터]");
 		if (fgets(buf, BUFSIZE + 1, stdin) == NULL)
 			break;
 		len = strlen(buf);
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 			err_display("send()");
 			break;
 		}
-		retval = send(sock, buf, strlen(buf), 0);
+		retval = recvn(sock, buf, retval,0);
 		if (retval == SOCKET_ERROR) {
 			err_display("send()");
 			break;
