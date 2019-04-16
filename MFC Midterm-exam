@@ -1,0 +1,159 @@
+
+// ChildView.cpp: CChildView 클래스의 구현
+//
+
+#include "pch.h"
+#include "framework.h"
+#include "MFCApplication6.h"
+#include "ChildView.h"
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
+
+
+// CChildView
+
+CChildView::CChildView()
+{
+	CMetaFileDC dc;
+	dc.CreateEnhanced(NULL, NULL, NULL, NULL);
+	dc.Rectangle(x - 10, y - 10, x + 10, y + 10);
+	hm = dc.CloseEnhanced();
+}
+
+CChildView::~CChildView()
+{
+	::DeleteEnhMetaFile(hm);
+}
+
+
+BEGIN_MESSAGE_MAP(CChildView, CWnd)
+	ON_WM_PAINT()
+	ON_WM_MOUSEMOVE()
+	ON_WM_SETCURSOR()
+	ON_WM_KEYDOWN()
+	ON_WM_CHAR()
+	ON_WM_LBUTTONDOWN()
+	ON_WM_SYSCOMMAND()
+END_MESSAGE_MAP()
+
+
+
+// CChildView 메시지 처리기
+
+BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs) 
+{
+	if (!CWnd::PreCreateWindow(cs))
+		return FALSE;
+
+	cs.dwExStyle |= WS_EX_CLIENTEDGE;
+	cs.style &= ~WS_BORDER;
+	cs.lpszClass = AfxRegisterWndClass(CS_HREDRAW|CS_VREDRAW|CS_DBLCLKS, 
+		::LoadCursor(nullptr, IDC_ARROW), reinterpret_cast<HBRUSH>(COLOR_WINDOW+1), nullptr);
+
+	return TRUE;
+}
+
+void CChildView::OnPaint() 
+{
+	CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
+	CBrush rbr, gbr, bbr, kbr;
+	rbr.CreateSolidBrush(RGB(255, 0, 0));
+	gbr.CreateSolidBrush(RGB(0,255,0));
+	bbr.CreateSolidBrush(RGB(0,0,255));
+	kbr.CreateSolidBrush(RGB(255, 255, 255));
+	if (cha=='R')
+		dc.SelectObject(rbr);
+	else if (cha == 'G')
+		dc.SelectObject(gbr);
+	else if (cha == 'B')
+		dc.SelectObject(bbr);
+
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+	dc.Ellipse(x,y,x+200,y+200);
+
+	// 그리기 메시지에 대해서는 CWnd::OnPaint()를 호출하지 마십시오.
+}
+BOOL CChildView::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	
+	if (nHitTest == HTCLIENT) {
+		CRgn rgn;
+		rgn.CreateEllipticRgn(x, y, x + 200, y + 200);
+		CPoint point;
+		::GetCursorPos(&point);
+		ScreenToClient(&point);
+		if (rgn.PtInRegion(point))
+			::SetCursor(AfxGetApp()->LoadStandardCursor(IDC_ARROW));
+		else
+			::SetCursor(AfxGetApp()->LoadStandardCursor(IDC_CROSS));
+		return true;
+	}
+	return CWnd::OnSetCursor(pWnd, nHitTest, message);
+}
+
+
+void CChildView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	if (nChar == VK_LEFT) {
+		if (x < 120)
+			x += 20;
+		x -= 20;
+		Invalidate();
+	}
+	if (nChar == VK_RIGHT) {
+		if (x > 480)
+			x -= 20;
+		x += 20;
+		Invalidate();
+	}
+	if (nChar == VK_UP) {
+		if (y < 120)
+			y += 20;
+		y -= 20;
+		Invalidate();
+	}
+	if (nChar == VK_DOWN) {
+		if (x < 680)
+			x -= 20;
+		y += 20;
+		Invalidate();
+	}
+	CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+
+
+void CChildView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	if (nChar == _T('R')|| nChar == _T('r')) {
+		cha = 'R';
+		Invalidate();
+	}
+	if (nChar == _T('G')|| nChar == _T('g')) {
+		cha = 'G';
+		Invalidate();
+	}
+	if (nChar == _T('B')|| nChar == _T('b')) {
+		cha = 'B';
+		Invalidate();
+	}
+	CWnd::OnChar(nChar, nRepCnt, nFlags);
+}
+
+
+void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	CClientDC dc(this);
+	CRect rect(point.x - 10, point.y - 10, point.x + 10, point.y + 10);
+	dc.PlayMetaFile(hm, &rect);
+	CWnd::OnLButtonDown(nFlags, point);
+}
+
+
