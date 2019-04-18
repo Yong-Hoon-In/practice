@@ -16,7 +16,7 @@ public:
 	int x=290, y=145;
 	char cha;
 	HENHMETAFILE hm;
-
+	
 // 특성입니다.
 public:
 
@@ -42,7 +42,9 @@ public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 
 // ChildView.cpp: CChildView 클래스의 구현
@@ -66,6 +68,7 @@ CChildView::CChildView()
 	dc.CreateEnhanced(NULL, NULL, NULL, NULL);
 	dc.Rectangle(x - 10, y - 10, x + 10, y + 10);
 	hm = dc.CloseEnhanced();
+	
 }
 
 CChildView::~CChildView()
@@ -105,6 +108,8 @@ void CChildView::OnPaint()
 {
 	CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
 	CBrush rbr, gbr, bbr, kbr;
+	CRgn rgn;
+	rgn.CreateRectRgn(x, y, x + 200, y + 200);
 	rbr.CreateSolidBrush(RGB(255, 0, 0));
 	gbr.CreateSolidBrush(RGB(0,255,0));
 	bbr.CreateSolidBrush(RGB(0,0,255));
@@ -127,7 +132,7 @@ BOOL CChildView::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 	
 	if (nHitTest == HTCLIENT) {
 		CRgn rgn;
-		rgn.CreateEllipticRgn(x, y, x + 200, y + 200);
+		rgn.CreateRectRgn(x, y, x + 200, y + 200);
 		CPoint point;
 		::GetCursorPos(&point);
 		ScreenToClient(&point);
@@ -144,30 +149,37 @@ BOOL CChildView::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 void CChildView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-
+	CRgn rgn;
+	
 	if (nChar == VK_LEFT) {
-		if (x < 120)
+		rgn.CreateRectRgn(x - 50, y - 50, x + 250, y + 250);
+		if (x < 12)
 			x += 20;
 		x -= 20;
-		Invalidate();
+		InvalidateRgn(&rgn, 1);
+//		Invalidate();
 	}
 	if (nChar == VK_RIGHT) {
-		if (x > 480)
+		rgn.CreateRectRgn(x - 50, y - 50, x + 250, y + 250);
+		if (x > 580)
 			x -= 20;
 		x += 20;
-		Invalidate();
+		InvalidateRgn(&rgn, 1);
+//		Invalidate();
 	}
 	if (nChar == VK_UP) {
-		if (y < 120)
+		rgn.CreateRectRgn(x - 50, y - 50, x + 250, y + 250);
+		if (y < 12)
 			y += 20;
-		y -= 20;
-		Invalidate();
+		y -= 20; InvalidateRgn(&rgn, 1);
+//		Invalidate();
 	}
 	if (nChar == VK_DOWN) {
-		if (x < 680)
-			x -= 20;
-		y += 20;
-		Invalidate();
+		rgn.CreateRectRgn(x-50, y-50, x + 250, y + 250);
+		if (y > 788)
+			return;
+		y += 20; InvalidateRgn(&rgn, 1);
+//		Invalidate();
 	}
 	CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -175,19 +187,20 @@ void CChildView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CChildView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
+	CRgn rgn;
+	rgn.CreateRectRgn(x, y, x + 200, y + 200);
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-
 	if (nChar == _T('R')|| nChar == _T('r')) {
 		cha = 'R';
-		Invalidate();
+		InvalidateRgn(&rgn, 1);
 	}
 	if (nChar == _T('G')|| nChar == _T('g')) {
 		cha = 'G';
-		Invalidate();
+		InvalidateRgn(&rgn, 1);
 	}
 	if (nChar == _T('B')|| nChar == _T('b')) {
 		cha = 'B';
-		Invalidate();
+		InvalidateRgn(&rgn, 1);
 	}
 	CWnd::OnChar(nChar, nRepCnt, nFlags);
 }
