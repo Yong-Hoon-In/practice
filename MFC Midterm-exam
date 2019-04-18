@@ -161,7 +161,7 @@ void CChildView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 	if (nChar == VK_RIGHT) {
 		rgn.CreateRectRgn(x - 50, y - 50, x + 250, y + 250);
-		if (x > 580)
+		if (x > 560)
 			x -= 20;
 		x += 20;
 		InvalidateRgn(&rgn, 1);
@@ -176,14 +176,13 @@ void CChildView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 	if (nChar == VK_DOWN) {
 		rgn.CreateRectRgn(x-50, y-50, x + 250, y + 250);
-		if (y > 788)
-			return;
+		if (y > 270)
+			y -= 20;
 		y += 20; InvalidateRgn(&rgn, 1);
 //		Invalidate();
 	}
 	CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
 }
-
 
 void CChildView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
