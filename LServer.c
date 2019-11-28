@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <alpa/inet.h>
+#include <arpa/inet.h>
 #include <sys/socket.h>
 
 #define BUF_SIZE 1024
@@ -13,6 +13,7 @@ int main(int argc,char *argv[]){
     int str_len,i;
     struct sockaddr_in serv_adr;
     struct sockaddr_in clnt_adr;
+    socklen_t clnt_adr_sz;
     if(argc!=2){
         printf("Usage : %s <Port> \n",argv[0]);
         exit(1);
