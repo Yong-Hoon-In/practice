@@ -11,8 +11,8 @@ int main(int argc, char *argv[])
 {
     int sock;
     struct sockaddr_in serv_addr;
-    char message[BUF_SIZE];
-    char message int str_len;
+    char message[BUF_SIZE] = {0};
+    int str_len;
     char *startmsg = "가위바위보 게임을 시작합니다\n";
     if (argc != 3)
     {
@@ -30,29 +30,32 @@ int main(int argc, char *argv[])
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
     serv_addr.sin_port = htons(atoi(argv[2]));
+
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
+        error_handling("connect() error");
+    else
+        puts("Connected");
     while (1)
     {
-        if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
-            error_handling("connect() error");
-        else
-            puts("Connected");
-        while (1)
+        printf("%s", startmsg);
+        str_len = read(sock, message, BUF_SIZE - 1);
+        message[str_len] = 0;
+        fputs(message, stdout);
+        fgets(message, BUFSIZE, stdin);
+        if (strcmp(message, "quit") == 0)
+            return 0;
+        write(sock, message, strlen(message));
+        for (i = 0; i < 5; i++)
         {
-            printf("%s", startmsg);
-
-            read(sock, message, BUF_SIZE);
+            str_len = read(sock, message, BUFSIZE - 1);
+            message[str_len] = 0;
             printf("%s", message);
-
-            scanf("%s", message);
-            if (strcmp(message, "quit") == 0)
-                return 0;
-            else if ((strcmp(message, "가위") != 0) && (strcmp(message, "바위") != 0) && (strcmp(message, "보") != 0))
-                printf("다시 입력해주세요");
-
-            write(sock, message, BUF_SIZE);
-            read(sock, message, BUF_SIZE);
-            printf("%s", message);
+            fflush(stdout);
         }
+        str_len = read(sock, message, BUFSIZE - 1);
+        message[str_len] = 0;
+        fputs(message, stdout);
+        fputc('\n', stdout);
     }
 
     close(sock);
