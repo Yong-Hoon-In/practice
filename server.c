@@ -15,14 +15,19 @@ int main(int argc, char *argv[])
     int value = 0;
     int com = 0;
     struct sockaddr_in serv_addr, clnt_addr;
-    char ttt[20];
     socklen_t clnt_addr_size;
 
-    char informsg[] = "'가위' 또는 '바위' 또는 '보' 를 입력해주세요\n 끝내려면 quit 를 입력해주세요\n";
+    char informsg[] = "'가위(0)' 또는 '바위(1)' 또는 '보(2)' 를 입력해주세요\n 끝내려면 quit 를 입력해주세요\n";
     char win[] = "축하합니다 이겼습니다!\n";
     char loss[] = "졌습니다! 다시 도전해 보세요\n";
     char tie[] = "비겼습니다! 다시 도전해 보세요\n";
-    char clntmsg[BUF_SIZE];
+    char bawi[] = "바위";
+    char gawi[] = "가위";
+    char bo[] = "보";
+    char server[] = "서버는";
+    char client[] = "를 냈고 클라이언트는";
+    char msg[] = "를 냈습니다 \n:";
+    char buffer[BUF_SIZE] = {0};
     if (argc != 2)
     {
         printf("Usage: %s <port>\n", argv[0]);
@@ -43,46 +48,89 @@ int main(int argc, char *argv[])
 
     if (listen(serv_sock, 5) == -1)
         error_handling("listen() error");
+
+    clnt_addr_size = sizeof(clnt_addr);
+
+    clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_addr, &clnt_addr_size);
+    if (clnt_sock == -1)
+        error_handling("accept() error");
+    printf("가위바위보 시작");
+
     while (1)
     {
-        clnt_addr_size = sizeof(clnt_addr);
+        char buffer[BUF_SIZE];
+        memset(buffer, 0, sizeof(buffer));
+        write(clnt_sock, informsg, sizeof(informsg));
 
-        clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_addr, &clnt_addr_size);
-        while (1)
+        read(clnt_sock, buffer, BUF_SIZE);
+        int client_num = atoi(buffer);
+        srand((unsigned)time(NULL));
+        int server_num = rand() % 3;
+
+        usleep(100);
+        if (server_num == 0)
         {
-            write(clnt_sock, informsg, sizeof(informsg));
-            read(clnt_sock, clntmsg, BUF_SIZE);
-
-            if (strcmp(clntmsg, "quit") == 0)
-            {
-                close(clnt_sock);
-                break;
-            }
-            if (strncmp(clntmsg, "가위", 1) == 0)
-                value = 0;
-            else if (strncmp(clntmsg, "바위", 1) == 0)
-                value = 1;
-            else if (strncmp(clntmsg, "보", 1) == 0)
-                value = 2;
-
-            com = Rock(value);
-            if (com == 0)
-                strncpy(ttt, "가위", strlen("가위"));
-            if (com == 1)
-                strncpy(ttt, "바위", strlen("바위"));
-            if (com == 2)
-                strncpy(ttt, "보", strlen("보"));
-
-            printf("사용자가 낸것: %s 서버에서 낸것: %s", clntmsg, ttt);
-
-            if (value = 1)
-                write(clnt_sock, win, BUF_SIZE);
-            else if (value = -1)
-                write(clnt_sock, loss, BUF_SIZE);
-            else if (value = 0)
-                write(clnt_sock, tie, BUF_SIZE);
+            fputs(gawi, stdout);
+            write(clnt_sock, gawi, sizeof(gawi));
+            usleep(100);
         }
-        printf("Finish\n");
+        else if (server_num == 1)
+        {
+            fputs(bawi, stdout);
+            write(clnt_sock, bawi, sizeof(bawi));
+            usleep(100);
+        }
+        else
+        {
+            fputs(bo, stdout);
+            write(clnt_sock, bo, sizeof(bo));
+            usleep(100);
+        }
+        fputs(client, stdout);
+        write(clnt_sock, client, sizeof(client));
+        usleep(100);
+        if (client_num == 0)
+        {
+            fputs(gawi, stdout);
+            write(clnt_sock, gawi, sizeof(gawi));
+            usleep(100);
+        }
+        else if (client_num == 1)
+        {
+            fputs(bawi, stdout);
+            write(clnt_sock, bawi, sizeof(bawi));
+            usleep(100);
+        }
+        else
+        {
+            fputs(bo, stdout);
+            write(clnt_sock, bo, sizeof(bo));
+            usleep(100);
+        }
+        fputs(msg, stdout);
+        write(clnt_sock, msg, sizeof(msg));
+        usleep(100);
+
+        result = who_win(server_num, client_num);
+        if (result == 0)
+        {
+            write(clnt_sock, no_winner, sizeof(no_winner));
+            fputs(no_winner, stdout);
+        }
+        else if (result == 1)
+        {
+            write(clnt_sock, lose, sizeof(lose));
+            fputs(win, stdout);
+        }
+        else
+        {
+            write(clnt_sock, win, sizeof(win));
+            fputs(lose, stdout);
+        }
+
+        puts("유저와의 연결을 종료합니다.");
+        close(clnt_sock);
+        exit(0);
     }
 
     close(serv_sock);
@@ -95,15 +143,18 @@ void error_handling(char *message)
     fputc('\n', stderr);
     exit(1);
 }
-int Rock(int msg)
+int who_win(int a, int b)
 {
-    srand((unsigned)time(NULL));
-    int ran = rand() % 3;
-    if (msg == ran)
-        return 0; //무승부
-    else if ((msg == 0 && ran == 2) || (msg == 1 && ran == 0) || (msg == 2 && ran == 1))
-        return 1; //이김
+    if (a == b)
+    {
+        return 0;
+    }
+    else if ((a == 0 && b == 2) || (a == 1 && b == 0) || (a == 2 && b == 1))
+    {
+        return 1;
+    }
     else
-        return -1; //짐
-    return ran;
+    {
+        return -1;
+    }
 }
