@@ -48,39 +48,40 @@ int main(int argc, char *argv[])
         clnt_addr_size = sizeof(clnt_addr);
 
         clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_addr, &clnt_addr_size);
-
-        write(clnt_sock, informsg, sizeof(informsg));
-        read(clnt_sock, clntmsg, BUF_SIZE);
-
-        if (strcmp(clntmsg, "quit") == 0)
+        while (1)
         {
-            close(clnt_sock);
-            break;
+            write(clnt_sock, informsg, sizeof(informsg));
+            read(clnt_sock, clntmsg, BUF_SIZE);
+
+            if (strcmp(clntmsg, "quit") == 0)
+            {
+                close(clnt_sock);
+                break;
+            }
+            if (strncmp(clntmsg, "가위", 1) == 0)
+                value = 0;
+            else if (strncmp(clntmsg, "바위", 1) == 0)
+                value = 1;
+            else if (strncmp(clntmsg, "보", 1) == 0)
+                value = 2;
+
+            com = Rock(value);
+            if (com == 0)
+                strncpy(ttt, "가위", strlen("가위"));
+            if (com == 1)
+                strncpy(ttt, "바위", strlen("바위"));
+            if (com == 2)
+                strncpy(ttt, "보", strlen("보"));
+
+            printf("사용자가 낸것: %s 서버에서 낸것: %s", clntmsg, ttt);
+
+            if (value = 1)
+                write(clnt_sock, win, BUF_SIZE);
+            else if (value = -1)
+                write(clnt_sock, loss, BUF_SIZE);
+            else if (value = 0)
+                write(clnt_sock, tie, BUF_SIZE);
         }
-        if (strncmp(clntmsg, "가위", 1) == 0)
-            value = 0;
-        else if (strncmp(clntmsg, "바위", 1) == 0)
-            value = 1;
-        else if (strncmp(clntmsg, "보", 1) == 0)
-            value = 2;
-
-        com = Rock(value);
-        if (com == 0)
-            strncpy(ttt, "가위", strlen("가위"));
-        if (com == 1)
-            strncpy(ttt, "바위", strlen("바위"));
-        if (com == 2)
-            strncpy(ttt, "보", strlen("보"));
-
-        printf("사용자가 낸것: %s 서버에서 낸것: %s", clntmsg, ttt);
-
-        if (value = 1)
-            write(clnt_sock, win, BUF_SIZE);
-        else if (value = -1)
-            write(clnt_sock, loss, BUF_SIZE);
-        else if (value = 0)
-            write(clnt_sock, tie, BUF_SIZE);
-
         printf("Finish\n");
     }
 
