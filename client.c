@@ -36,20 +36,23 @@ int main(int argc, char *argv[])
             error_handling("connect() error");
         else
             puts("Connected");
-        printf("%s", startmsg);
+        while (1)
+        {
+            printf("%s", startmsg);
 
-        read(sock, message, BUF_SIZE);
-        printf("%s", message);
+            read(sock, message, BUF_SIZE);
+            printf("%s", message);
 
-        scanf("%s", message);
-        if (strcmp(message, "quit") == 0)
-            return 0;
-        else if ((strcmp(message, "가위") != 0) && (strcmp(message, "바위") != 0) && (strcmp(message, "보") != 0))
-            printf("다시 입력해주세요");
+            scanf("%s", message);
+            if (strcmp(message, "quit") == 0)
+                return 0;
+            else if ((strcmp(message, "가위") != 0) && (strcmp(message, "바위") != 0) && (strcmp(message, "보") != 0))
+                printf("다시 입력해주세요");
 
-        write(sock, message, BUF_SIZE);
-        read(sock, message, BUF_SIZE);
-        printf("%s", message);
+            write(sock, message, BUF_SIZE);
+            read(sock, message, BUF_SIZE);
+            printf("%s", message);
+        }
     }
 
     close(sock);
