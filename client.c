@@ -11,9 +11,9 @@ int main(int argc, char *argv[])
 {
     int sock;
     struct sockaddr_in serv_addr;
-    char message[BUF_SIZE] = {0};
+    char message[BUF_SIZE];
+    char value[BUF_SIZE];
     int str_len;
-    char *startmsg = "가위바위보 게임을 시작합니다\n";
     if (argc != 3)
     {
         printf("Usage : %s <IP> <Port>\n", argv[0]);
@@ -35,27 +35,23 @@ int main(int argc, char *argv[])
         error_handling("connect() error");
     else
         puts("Connected");
+
+    read(sock,message,BUF_SIZE);
+    printf("%s", startmsg);
+    printf("%s",message);
     while (1)
     {
-        printf("%s", startmsg);
-        str_len = read(sock, message, BUF_SIZE - 1);
-        message[str_len] = 0;
-        fputs(message, stdout);
-        fgets(message, BUFSIZE, stdin);
-        if (strcmp(message, "quit") == 0)
-            return 0;
-        write(sock, message, strlen(message));
-        for (i = 0; i < 5; i++)
-        {
-            str_len = read(sock, message, BUFSIZE - 1);
-            message[str_len] = 0;
-            printf("%s", message);
-            fflush(stdout);
+        scanf("%s",&value);
+        write(sock,value,sizeof(value));
+        if(value==0){
+            printf("낸것 :가위");
         }
-        str_len = read(sock, message, BUFSIZE - 1);
-        message[str_len] = 0;
-        fputs(message, stdout);
-        fputc('\n', stdout);
+        if(value==1){
+            printf("낸것 :바위");
+        }
+        if(value==2){
+            printf("낸것 :보");
+        }
     }
 
     close(sock);
