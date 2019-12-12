@@ -43,6 +43,12 @@ int main(int argc, char *argv[])
     {
         scanf("%s",value);
         write(sock,value,sizeof(value));
+        if (strncmp(value, "quit", 3) == 0)
+            {
+                puts("연결을 종료합니다.");
+                close(sock);
+                exit(0);
+            }
         if (strncmp(value, "0", 1)==0){
             printf("낸것 :가위");
         }
