@@ -68,22 +68,21 @@ int main(int argc, char *argv[])
                 close(clnt_sock);
                 exit(0);
             }
-            if (strncmp(buffer, '0', 1))
+            if (strncmp(buffer, "0", 1))
             {
                 value = 0;
             }
-            if (strncmp(buffer, '1', 1))
+            if (strncmp(buffer, "1", 1))
             {
                 value = 1;
             }
-            if (strncmp(buffer, '2', 1))
+            if (strncmp(buffer, "2", 1))
             {
                 value = 2;
             }
             srand(time(NULL));
             random = rand() % 3;
             com = who_win(random, value);
-            write(clnt_sock, , BUF_SIZE);
             if (com == 0)
                 write(clnt_sock, tie, sizeof(tie));
             else if (com == 1)
