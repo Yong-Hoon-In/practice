@@ -37,21 +37,23 @@ int main(int argc, char *argv[])
         puts("Connected");
 
     read(sock,message,BUF_SIZE);
-    printf("가위바위보 게임을 시작합니다", startmsg);
+    printf("가위바위보 게임을 시작합니다");
     printf("%s",message);
     while (1)
     {
         scanf("%s",value);
         write(sock,value,sizeof(value));
-        if (strncmp(value, "0", 1))
+        if (strncmp(value, "0", 1)==0){
             printf("낸것 :가위");
         }
-        if (strncmp(value, "1", 1))
+        if (strncmp(value, "1", 1)==0){
             printf("낸것 :바위");
         }
-        if (strncmp(value, "2", 1))
+        if (strncmp(value, "2", 1)==0){
             printf("낸것 :보");
         }
+        read(sock,message,BUF_SIZE);
+        printf("%s",message);
     }
 
     close(sock);
