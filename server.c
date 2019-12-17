@@ -22,9 +22,15 @@ int main(int argc, char *argv[])
     char bawi[] = "바위";
     char gawi[] = "가위";
     char bo[] = "보";
+    char one[]="1";
+    char two[]="2";
+    char zero[]="0";
     char buffer[BUF_SIZE];
     int value, com;
     char message[BUF_SIZE];
+    FILE *fp;
+    int read_cnt;
+    char buf[BUF_SIZE];
     if (argc != 2)
     {
         printf("Usage: %s <port>\n", argv[0]);
@@ -48,6 +54,7 @@ int main(int argc, char *argv[])
 
     int random;
     clnt_addr_size = sizeof(clnt_addr);
+
     for (i = 0; i < 5; i++)
     {
         clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_addr, &clnt_addr_size);
@@ -56,39 +63,65 @@ int main(int argc, char *argv[])
         else
             printf("Connected client");
 
-        printf("가위바위보 시작\n");
 
+        fp = fopen("option.txt", "wb");
+        if (fp != NULL)
+        {
+            while (1)
+            {
+                read_cnt = fread((void *)buf, 1, BUF_SIZE, fp);
+                if (read_cnt < BUF_SIZE)
+                {
+                    write(clnt_sock, buf, read_cnt);
+                    break;
+                }
+                write(clnt_sock, buf, BUF_SIZE);
+            }
+        }
+        fclose(fp);
+
+
+        printf("가위바위보 시작\n");
+        fp=fopen("option.txt","ab");
         write(clnt_sock, informsg, sizeof(informsg));
         memset(buffer, 0, sizeof(buffer));
         while ((str_len = read(clnt_sock, buffer, BUF_SIZE)) != 0)
         {
+
             if (strncmp(buffer, "quit", 3) == 0)
             {
                 puts("유저와의 연결을 종료합니다.");
                 close(clnt_sock);
+                fclose(fp);
                 exit(0);
             }
             if (strncmp(buffer, "0", 1))
             {
-                value = 0;
+                value = 0;//draw
             }
             if (strncmp(buffer, "1", 1))
             {
-                value = 1;
+                value = 1;//clnt lose
             }
             if (strncmp(buffer, "2", 1))
             {
-                value = 2;
+                value = 2;//clnt win
             }
             srand(time(NULL));
             random = rand() % 3;
             com = who_win(random, value);
-            if (com == 0)
+            if (com == 0){
                 write(clnt_sock, tie, sizeof(tie));
-            else if (com == 1)
+                fwrite(zero,sizeof(zero),1,fp);
+            }
+            else if (com == 1){
                 write(clnt_sock, lose, sizeof(lose));
-            else if (com == -1)
+                fwrite(one,sizeof(one),1,fp);
+            }
+            else if (com == -1){
                 write(clnt_sock, win, sizeof(win));
+                fwrite(two,sizeof(two),1,fp);
+            }
         }
     }
 
