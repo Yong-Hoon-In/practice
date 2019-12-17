@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <time.h>
 #include <string.h>
-#define BUF_SIZE 200
+#define BUF_SIZE 1024
 void error_handling(char *message);
 int who_win(int a, int b);
 int main(int argc, char *argv[])
@@ -65,27 +65,19 @@ int main(int argc, char *argv[])
 
 
 
-        fp = fopen("option.txt", "rab");
-        if (fp != NULL)
-        {
-            while (1)
-            {
-                read_cnt = fread((void *)buf, 1, BUF_SIZE, fp);
-                if (read_cnt < BUF_SIZE)
-                {
-                    write(clnt_sock, buf, read_cnt);
-                    break;
-                }
-                write(clnt_sock, buf, BUF_SIZE);
-            }
-        }
-        
-
-
+        fp = fopen("option.txt", "r");
+        fread(buf,sizeof(char),sizeof(buf),fp);
+	
+        fclose(fp);
+	
+	
+	fp=fopen("option.txt","a");
 
         printf("가위바위보 시작\n");
         write(clnt_sock, informsg, sizeof(informsg));
+	write(clnt_sock, buf, sizeof(buf));
         memset(buffer, 0, sizeof(buffer));
+
         while ((str_len = read(clnt_sock, buffer, BUF_SIZE)) != 0)
         {
 
