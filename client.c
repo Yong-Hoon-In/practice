@@ -44,20 +44,13 @@ int main(int argc, char *argv[])
     read(sock, message, BUF_SIZE);
     printf("가위바위보 게임을 시작합니다");
     printf("%s", message);
+
     fp = fopen("option.txt", "rwb");
-    while ((read_cnt = read(sd, buf, BUF_SIZE)) != 0)
+    while ((read_cnt = read(sock, buf, BUF_SIZE)) != 0)
         fwrite((void *)buf, 1, read_cnt, fp);
-//   fp=fopen("option.txt","rb");
-    fread(buf,sizeof(buf),1,fp);
-    for(i=0;buf[i]!=NULL;i++){
-        if(buf[i]==0)
-            draw++;
-        else if(buf[i]==1)
-            lose++;
-        else if(buf[i]==2)
-            win++;
-        
-    }
+
+    fgets(buf,sizeof(buf),1,fp);
+
     fclose(fp);
     printf("이긴 횟수: %d 진 횟수: %d 비긴 횟수: %d",win,lose,draw);
     
