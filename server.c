@@ -64,7 +64,8 @@ int main(int argc, char *argv[])
             printf("Connected client");
 
 
-        fp = fopen("option.txt", "wb");
+
+        fp = fopen("option.txt", "rab");
         if (fp != NULL)
         {
             while (1)
@@ -78,11 +79,11 @@ int main(int argc, char *argv[])
                 write(clnt_sock, buf, BUF_SIZE);
             }
         }
-        fclose(fp);
+        
+
 
 
         printf("가위바위보 시작\n");
-        fp=fopen("option.txt","ab");
         write(clnt_sock, informsg, sizeof(informsg));
         memset(buffer, 0, sizeof(buffer));
         while ((str_len = read(clnt_sock, buffer, BUF_SIZE)) != 0)
